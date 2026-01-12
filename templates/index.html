@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OCR Extraction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <h1 class="app-title">📝 OCR Extraction System</h1>
+    <p class="app-subtitle">Upload an Image or PDF to extract text and detect errors</p>
+
+    
+    <div class="card upload-card">
+        <form method="POST" enctype="multipart/form-data">
+
+            <label class="upload-box">
+                <input type="file" name="file" required>
+                <div class="upload-content">
+                    <p>Drag & Drop OR Click to Browse</p>
+                    <span class="file-info">Supported: PNG | JPG | JPEG | PDF</span>
+                </div>
+            </label>
+
+            <button type="submit" class="btn extract-btn">Extract Text</button>
+        </form>
+    </div>
+
+
+    {% if extracted_text %}
+    <div class="card result-card">
+        <h2 class="section-title">✅ Extracted Text</h2>
+
+        <div class="output-box">
+            {{ extracted_text|safe }}
+        </div>
+    </div>
+
+    
+    <div class="card">
+        <h2 class="section-title">📊 Summary</h2>
+        <p><strong>Total Words:</strong> {{ total_words }}</p>
+        <p><strong>Total Lines:</strong> {{ total_lines }}</p>
+
+        {% if confidence %}
+        <p class="confidence-score">OCR Confidence Score: {{ confidence }}%</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+
+    {% if table %}
+    <div class="card table-card">
+        <h2 class="section-title">🔍 Detected Extra Spaces</h2>
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Line No</th>
+                    <th>Before Word</th>
+                    <th>Spaces Count</th>
+                    <th>After Word</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for row in table %}
+                <tr>
+                    <td>{{ row.line }}</td>
+                    <td>{{ row.before }}</td>
+                    <td>{{ row.spaces }}</td>
+                    <td>{{ row.after }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+
+    {% if spelling_errors %}
+    <div class="card table-card">
+        <h2 class="section-title">❗ Spelling Errors Detected</h2>
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Incorrect Word</th>
+                    <th>Suggested Correction</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for err in spelling_errors %}
+                <tr>
+                    <td>{{ err.word }}</td>
+                    <td>{{ err.suggestion }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
